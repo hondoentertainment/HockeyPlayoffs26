@@ -1,12 +1,45 @@
 # NHL Playoffs 2026 — Bracket Scorer
 
-An Excel workbook that tracks the 2026 NHL playoffs bracket and automatically
-scores physical brackets submitted by players.
+Tracks the 2026 NHL playoffs bracket and automatically scores brackets
+submitted by players. Available as either:
 
-## Files
+- a **web app** (Next.js, deployable to Vercel) — see *Web app* below
+- an **Excel workbook** — see *Excel workbook* below
+
+## Web app
+
+A Next.js + React app that mirrors the Excel workbook. State is persisted in
+the browser via `localStorage` — no backend or database required.
+
+### Run locally
+
+```
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+### Deploy to Vercel
+
+The repo is a zero-config Next.js project; Vercel will detect it automatically.
+
+1. Push this branch to GitHub.
+2. In Vercel, "Add New… → Project", import the repo, accept the defaults
+   (framework: Next.js, build command: `next build`, output: `.next`).
+3. Click *Deploy*.
+
+Or via CLI from this directory:
+
+```
+npx vercel        # preview deploy
+npx vercel --prod # production deploy
+```
+
+## Excel workbook
 
 - **`NHL_Playoffs_2026_Bracket_Scorer.xlsx`** — open this in Excel / Google
-  Sheets / LibreOffice Calc. This is the file you actually use.
+  Sheets / LibreOffice Calc.
 - **`build_bracket.py`** — regenerates the workbook from scratch. Only needed
   if you want to change the structure. Run with:
   ```

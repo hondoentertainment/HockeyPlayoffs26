@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: #f5f7fb;
+  color: #1f2937;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  @apply rounded border border-gray-300 px-2 py-1 text-sm focus:border-sub focus:outline-none focus:ring-1 focus:ring-sub;
+}
+
+button {
+  @apply rounded bg-header px-3 py-1.5 text-sm font-medium text-white transition hover:bg-sub disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+button.ghost {
+  @apply bg-transparent text-header hover:bg-header/10;
+}
+
+button.danger {
+  @apply bg-red-600 hover:bg-red-700;
+}
+
+table {
+  @apply w-full border-collapse text-sm;
+}
+
+th,
+td {
+  @apply border border-gray-300 px-2 py-1 text-left align-middle;
+}
+
+th {
+  @apply bg-header text-white;
+}
