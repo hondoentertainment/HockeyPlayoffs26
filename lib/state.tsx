@@ -44,6 +44,7 @@ interface AppCtx {
   ) => void;
   setConfig: (patch: Partial<ScoringConfig>) => void;
   resetAll: () => void;
+  replaceState: (next: AppState) => void;
 }
 
 const Ctx = createContext<AppCtx | null>(null);
@@ -127,6 +128,8 @@ export function StateProvider({ children }: { children: ReactNode }) {
 
   const resetAll = useCallback(() => setState(INITIAL), []);
 
+  const replaceState = useCallback((next: AppState) => setState(next), []);
+
   return (
     <Ctx.Provider
       value={{
@@ -139,6 +142,7 @@ export function StateProvider({ children }: { children: ReactNode }) {
         setPick,
         setConfig,
         resetAll,
+        replaceState,
       }}
     >
       {children}
