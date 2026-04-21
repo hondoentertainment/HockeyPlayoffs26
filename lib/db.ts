@@ -1,16 +1,8 @@
 import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
-import { SERIES } from "./series";
+import { DEFAULT_CONFIG, SERIES } from "./series";
 
 let _sql: NeonQueryFunction<false, false> | null = null;
 let initPromise: Promise<void> | null = null;
-
-const DEFAULT_CONFIG: Record<string, number> = {
-  R1_PTS: 2,
-  R2_PTS: 4,
-  CF_PTS: 6,
-  SCF_PTS: 10,
-  GAMES_BONUS: 1
-};
 
 export function sql(): NeonQueryFunction<false, false> {
   if (!_sql) {

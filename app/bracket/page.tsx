@@ -26,7 +26,13 @@ export default async function BracketPage() {
                     key={def.id}
                     className="rounded border border-slate-200 bg-white p-2 text-xs"
                   >
-                    <div className="text-slate-400 mb-1">{def.id}</div>
+                    <div className="flex justify-between text-slate-400 mb-1">
+                      <span>{def.id}</span>
+                      <span>
+                        {r.pointsForRound} pt
+                        {r.pointsForRound === 1 ? "" : "s"}
+                      </span>
+                    </div>
                     <Slot
                       team={r.resolvedTeam1}
                       isWinner={
@@ -53,6 +59,11 @@ export default async function BracketPage() {
           </div>
         ))}
       </div>
+      <p className="mt-4 text-xs text-slate-500">
+        Points shown are per correct winner. Picking the exact game count (4-7)
+        adds +{config.GAMES_BONUS} bonus only when the winner pick is also
+        correct.
+      </p>
     </section>
   );
 }

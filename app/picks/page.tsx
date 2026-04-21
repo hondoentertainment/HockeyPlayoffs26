@@ -10,10 +10,17 @@ export default async function PicksPage() {
   const [series, config] = await Promise.all([getAllSeries(), getConfig()]);
   const resolved = resolveSeries(series, config);
   const byId = new Map(resolved.map((r) => [r.id, r]));
+  const picksLocked = !!config.PICKS_LOCKED;
 
   return (
     <section>
       <h1 className="text-2xl font-bold mb-2">Submit your picks</h1>
+      {picksLocked && (
+        <div className="mb-4 rounded border border-rose-300 bg-rose-50 px-3 py-2 text-sm text-rose-900">
+          <strong>Picks are locked.</strong> The admin has closed submissions
+          for this pool. Leaderboard and player pick pages are now public.
+        </div>
+      )}
       <p className="text-sm text-slate-600 mb-6">
         For each series, pick the winner and predict the game count (4-7).
         Submitting again with the same name updates your picks. Once a series
@@ -36,7 +43,7 @@ export default async function PicksPage() {
             const r = byId.get(def.id)!;
             const t1 = r.resolvedTeam1;
             const t2 = r.resolvedTeam2;
-            const locked = !!r.winner;
+            const locked = !!r.winner || picksLocked;
             const options =
               t1 && t2 ? [t1, t2] : TEAMS;
             return (
@@ -90,7 +97,8 @@ export default async function PicksPage() {
 
         <button
           type="submit"
-          className="rounded bg-playoff px-4 py-2 text-white font-semibold hover:opacity-90"
+          disabled={picksLocked}
+          className="rounded bg-playoff px-4 py-2 text-white font-semibold hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Submit picks
         </button>
