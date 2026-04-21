@@ -19,17 +19,25 @@ scores physical brackets submitted by players.
 The workbook has six sheets:
 
 1. **Instructions** — cheat sheet inside the file.
-2. **Bracket** — enter the Round 1 matchups and the winner + games of each
-   series as the playoffs play out. Round 2, Conference Finals, and the
-   Stanley Cup Final fill in their team slots automatically from earlier
-   rounds. *Yellow cells = type here, green cells = auto-filled.*
+2. **Bracket** — Round 1 matchups are pre-populated with the 2026 field; edit
+   in place if any are wrong. Enter the winner + games of each series as the
+   playoffs play out. Round 2, Conference Finals, and the Stanley Cup Final
+   fill in their team slots automatically. A **Status** column shows each
+   series as *Not Set* / *In Progress* / *Final*. Scroll to the bottom row to
+   enter the actual Cup-Final total goals for the tiebreaker. *Yellow cells
+   = type here, green cells = auto-filled.*
 3. **Picks** — one column block per player (20 slots pre-built). Type each
-   player's name in row 1, then enter their Winner pick and Games pick for
-   every series.
-4. **Scores** — fully automatic. Shows points-per-series for each player, a
-   total row, and a color-scaled heatmap of how each player did per series.
-5. **Leaderboard** — live ranking, highest score wins.
-6. **Config** — tweak the point values per round and the games-bonus.
+   player's name in row 1, then enter their Winner pick (dropdown, limited
+   to the two teams in that series) and Games pick for every series. Last
+   row: each player enters a Cup-Final total-goals guess — used to break
+   ties.
+4. **Scores** — fully automatic. Points-per-series, TOTAL row, per-round
+   subtotals, and a color-scaled heatmap.
+5. **Leaderboard** — live ranking. Ties broken by closeness of the
+   total-goals guess (`|guess − actual|`, lower wins).
+6. **Config** — point values, the games-bonus, and a `PICKS_LOCKED` toggle.
+   When set to TRUE, all pick cells turn peach as a visual lock indicator.
+   For hard enforcement, right-click the Picks tab → Protect Sheet.
 
 ## Scoring (defaults, editable in the Config sheet)
 
