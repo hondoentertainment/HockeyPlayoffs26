@@ -104,3 +104,15 @@ export async function updateConfig(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
 }
+
+export async function togglePicksLocked(formData: FormData) {
+  await requireAdmin();
+  await ensureSchema();
+  const v = String(formData.get("locked") ?? "0") === "1" ? 1 : 0;
+  await sql()`
+    INSERT INTO config (key, value) VALUES ('PICKS_LOCKED', ${v})
+    ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`;
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/picks");
+}

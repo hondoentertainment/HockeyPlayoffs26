@@ -38,6 +38,7 @@ export default async function PlayerPicksPage({
   const resolved = resolveSeries(series, config);
   const byId = new Map(resolved.map((r) => [r.id, r]));
   const scored = scorePlayers([player], myPicks, resolved, config)[0];
+  const picksLocked = !!config.PICKS_LOCKED;
 
   return (
     <section>
@@ -47,6 +48,12 @@ export default async function PlayerPicksPage({
         <strong>{scored.total + scored.maxRemaining}</strong> · Correct
         winners: <strong>{scored.correctWinners}</strong>
       </p>
+      {!picksLocked && (
+        <div className="mb-4 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          Picks are hidden until the admin locks picks for the pool. Only
+          completed series (where the winner is already public) are shown.
+        </div>
+      )}
       <div className="overflow-x-auto rounded border border-slate-200 bg-white">
         <table className="w-full text-sm">
           <thead className="bg-slate-100 text-left">
@@ -65,6 +72,9 @@ export default async function PlayerPicksPage({
               const pick = myPickById.get(def.id);
               const correct =
                 r.winner && pick && norm(pick.winner) === norm(r.winner);
+              // Before lock, only reveal picks for series the pool already
+              // knows the result of. That keeps late entrants from copying.
+              const revealPick = picksLocked || !!r.winner;
               return (
                 <tr key={def.id} className="border-t border-slate-100">
                   <td className="px-3 py-2 text-slate-500">{def.id}</td>
@@ -79,9 +89,15 @@ export default async function PlayerPicksPage({
                         : "")
                     }
                   >
-                    {pick?.winner ?? <span className="text-slate-400">—</span>}
+                    {revealPick ? (
+                      pick?.winner ?? <span className="text-slate-400">—</span>
+                    ) : (
+                      <span className="text-slate-400">hidden</span>
+                    )}
                   </td>
-                  <td className="px-3 py-2">{pick?.games ?? "—"}</td>
+                  <td className="px-3 py-2">
+                    {revealPick ? pick?.games ?? "—" : "—"}
+                  </td>
                   <td className="px-3 py-2">
                     {r.winner ? (
                       `${r.winner} in ${r.games}`

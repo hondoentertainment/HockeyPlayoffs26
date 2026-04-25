@@ -12,6 +12,9 @@ Run:  python3 build_bracket.py
 Output: NHL_Playoffs_2026_Bracket_Scorer.xlsx
 """
 
+import json
+import os
+
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -41,34 +44,19 @@ CENTER = Alignment(horizontal="center", vertical="center")
 LEFT = Alignment(horizontal="left", vertical="center")
 
 
-# ---------- Series definitions ----------
-# (series_id, round_code, points_key, team1_source, team2_source)
-# team*_source is either None (Round 1) or a series id (winner of).
-SERIES = [
-    ("E1", "R1", "R1_PTS", None, None),
-    ("E2", "R1", "R1_PTS", None, None),
-    ("E3", "R1", "R1_PTS", None, None),
-    ("E4", "R1", "R1_PTS", None, None),
-    ("W1", "R1", "R1_PTS", None, None),
-    ("W2", "R1", "R1_PTS", None, None),
-    ("W3", "R1", "R1_PTS", None, None),
-    ("W4", "R1", "R1_PTS", None, None),
-    ("E5", "R2", "R2_PTS", "E1", "E2"),
-    ("E6", "R2", "R2_PTS", "E3", "E4"),
-    ("W5", "R2", "R2_PTS", "W1", "W2"),
-    ("W6", "R2", "R2_PTS", "W3", "W4"),
-    ("E7", "CF", "CF_PTS", "E5", "E6"),
-    ("W7", "CF", "CF_PTS", "W5", "W6"),
-    ("SCF", "SCF", "SCF_PTS", "E7", "W7"),
-]
+# ---------- Series definitions (single source of truth: series.json) ----------
+_SERIES_JSON_PATH = os.path.join(os.path.dirname(__file__), "series.json")
+with open(_SERIES_JSON_PATH, "r", encoding="utf-8") as _f:
+    _SERIES_DATA = json.load(_f)
 
-ROUND_LABELS = {
-    "R1": "Round 1",
-    "R2": "Round 2",
-    "CF": "Conference Final",
-    "SCF": "Stanley Cup Final",
-}
-ROUND_ORDER = ["R1", "R2", "CF", "SCF"]
+# Tuple form: (series_id, round_code, points_key, team1_source, team2_source)
+SERIES = [
+    (s["id"], s["round"], s["pointsKey"], s["team1Source"], s["team2Source"])
+    for s in _SERIES_DATA["series"]
+]
+ROUND_LABELS = _SERIES_DATA["roundLabels"]
+ROUND_ORDER = _SERIES_DATA["roundOrder"]
+DEFAULT_CONFIG = _SERIES_DATA["defaultConfig"]
 
 # 2026 NHL Playoffs Round 1 matchups.
 # Edit or overwrite in Excel if the bracket set differs from what you see here.
@@ -146,12 +134,14 @@ def write_config(wb, ws):
     ws.column_dimensions["A"].width = 30
     ws.column_dimensions["B"].width = 14
     header = ("Setting", "Value")
+    # Numeric config from series.json, plus the Excel-only PICKS_LOCKED toggle
+    # which is a boolean in the workbook (the web-app mirror uses 0/1).
     data = [
-        ("R1_PTS", 2),
-        ("R2_PTS", 4),
-        ("CF_PTS", 6),
-        ("SCF_PTS", 10),
-        ("GAMES_BONUS", 1),
+        ("R1_PTS", DEFAULT_CONFIG["R1_PTS"]),
+        ("R2_PTS", DEFAULT_CONFIG["R2_PTS"]),
+        ("CF_PTS", DEFAULT_CONFIG["CF_PTS"]),
+        ("SCF_PTS", DEFAULT_CONFIG["SCF_PTS"]),
+        ("GAMES_BONUS", DEFAULT_CONFIG["GAMES_BONUS"]),
         ("PICKS_LOCKED", False),
     ]
     for col, v in enumerate(header, start=1):

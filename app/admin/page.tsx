@@ -9,6 +9,7 @@ import {
   logoutAction,
   setRound1Matchups,
   setSeriesResult,
+  togglePicksLocked,
   updateConfig
 } from "./actions";
 
@@ -106,6 +107,38 @@ export default async function AdminPage() {
             );
           })}
         </div>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold mb-3">Picks lock</h2>
+        <form action={togglePicksLocked} className="flex items-center gap-3 text-sm">
+          <span>
+            Picks are currently{" "}
+            <strong>{config.PICKS_LOCKED ? "LOCKED" : "open"}</strong>.
+          </span>
+          <button
+            className="rounded bg-slate-800 text-white px-3 py-1 text-xs"
+            name="locked"
+            value={config.PICKS_LOCKED ? "0" : "1"}
+          >
+            {config.PICKS_LOCKED ? "Unlock picks" : "Lock picks"}
+          </button>
+        </form>
+        <p className="text-xs text-slate-500 mt-2">
+          While locked, individual player pick pages are hidden from the
+          public. (Submissions via /picks are still accepted — enforce that
+          separately if you want a hard lock.)
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-semibold mb-3">Export</h2>
+        <a
+          href="/admin/export"
+          className="inline-block rounded bg-slate-800 text-white px-3 py-1 text-xs"
+        >
+          Download leaderboard CSV
+        </a>
       </section>
 
       <section>

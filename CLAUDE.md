@@ -38,14 +38,26 @@ Tests open the generated `.xlsx` with openpyxl and assert structure
 
 ## Key structural invariants
 
-- The `SERIES` list in `build_bracket.py` defines 15 series (8 R1 + 4 R2 +
-  2 CF + 1 SCF). Later-round series reference earlier-round winners by id.
-- `NUM_PLAYERS` controls the number of pre-built player columns on the
-  Picks / Scores sheets. Changing it is a destructive reset.
+- `series.json` at the repo root is the single source of truth for series
+  definitions, round labels, and default scoring config. Both
+  `build_bracket.py` (Python) and `lib/series.ts` (TypeScript) read from it.
+  Change series structure / point defaults there, not in the code.
+- 15 series (8 R1 + 4 R2 + 2 CF + 1 SCF). Later-round series reference
+  earlier-round winners by id via `team1Source` / `team2Source`.
+- `NUM_PLAYERS` in `build_bracket.py` controls the number of pre-built
+  player columns on the Picks / Scores sheets. Changing it is a destructive
+  reset.
 - Named ranges (`R1_PTS`, `R2_PTS`, `CF_PTS`, `SCF_PTS`, `GAMES_BONUS`)
   live on the Config sheet and are referenced by Scores formulas.
 - Sheet order is enforced at the end of `main()`. New sheets must be added
   to the `desired` list.
+
+## Web app tests
+
+```
+npm install
+npm test          # vitest — covers lib/scoring.ts
+```
 
 ## Conventions
 
