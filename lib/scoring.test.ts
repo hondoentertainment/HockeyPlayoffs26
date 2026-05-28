@@ -1,7 +1,24 @@
 import { describe, expect, it } from "vitest";
 import type { PickRow, PlayerRow, SeriesRow } from "./db";
-import { rankPlayers, resolveSeries, scorePlayers } from "./scoring";
+import {
+  rankPlayers,
+  resolveSeries,
+  scorePlayers,
+  simulateWinChances
+} from "./scoring";
 import { SERIES } from "./series";
+
+// Deterministic PRNG so simulation tests are reproducible.
+function mulberry32(seed: number): () => number {
+  let a = seed;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
 const CONFIG = { R1_PTS: 2, R2_PTS: 4, CF_PTS: 6, SCF_PTS: 10, GAMES_BONUS: 1 };
 
@@ -180,5 +197,108 @@ describe("rankPlayers", () => {
       make("Dan", 12, 4)
     ]);
     expect(ranked.map((r) => r.player.name)).toEqual(["Dan", "Alice", "Bob", "Charlie"]);
+  });
+});
+
+describe("simulateWinChances", () => {
+  it("returns an empty array when there are no players", () => {
+    expect(simulateWinChances([], [], baseSeriesRows(), CONFIG)).toEqual([]);
+  });
+
+  it("gives the certain leader 100% when every series is decided", () => {
+    // Fully decide the bracket: R1 winners propagate up to the Cup.
+    const winners: Record<string, string> = {
+      E1: "Boston Bruins",
+      E2: "Montreal Canadiens",
+      E3: "Ottawa Senators",
+      E4: "Philadelphia Flyers",
+      W1: "Los Angeles Kings",
+      W2: "Minnesota Wild",
+      W3: "Utah Mammoth",
+      W4: "Anaheim Ducks",
+      E5: "Boston Bruins",
+      E6: "Ottawa Senators",
+      W5: "Los Angeles Kings",
+      W6: "Utah Mammoth",
+      E7: "Boston Bruins",
+      W7: "Los Angeles Kings",
+      SCF: "Boston Bruins"
+    };
+    const rows = baseSeriesRows();
+    setRow(rows, "E1", { team1: "Boston Bruins", team2: "Buffalo Sabres" });
+    setRow(rows, "E2", { team1: "Montreal Canadiens", team2: "Tampa Bay Lightning" });
+    setRow(rows, "E3", { team1: "Ottawa Senators", team2: "Carolina Hurricanes" });
+    setRow(rows, "E4", { team1: "Philadelphia Flyers", team2: "Pittsburgh Penguins" });
+    setRow(rows, "W1", { team1: "Los Angeles Kings", team2: "Colorado Avalanche" });
+    setRow(rows, "W2", { team1: "Minnesota Wild", team2: "Dallas Stars" });
+    setRow(rows, "W3", { team1: "Utah Mammoth", team2: "Vegas Golden Knights" });
+    setRow(rows, "W4", { team1: "Anaheim Ducks", team2: "Edmonton Oilers" });
+    for (const [id, winner] of Object.entries(winners)) {
+      setRow(rows, id, { winner, games: 5 });
+    }
+
+    // Alice nails every winner; Bob gets none.
+    const picks: PickRow[] = [];
+    for (const [id, winner] of Object.entries(winners)) {
+      picks.push({ player_id: alice.id, series_id: id, winner, games: 5 });
+      picks.push({ player_id: bob.id, series_id: id, winner: "Nobody", games: 5 });
+    }
+
+    const chances = simulateWinChances([alice, bob], picks, rows, CONFIG, {
+      trials: 50
+    });
+    const byName = Object.fromEntries(
+      chances.map((c) => [c.player.name, c.winProbability])
+    );
+    expect(byName.Alice).toBe(1);
+    expect(byName.Bob).toBe(0);
+  });
+
+  it("splits roughly 50/50 for a single undecided series", () => {
+    const rows = baseSeriesRows();
+    setRow(rows, "E1", { team1: "Boston Bruins", team2: "Buffalo Sabres" });
+    // The only differing picks are on E1; everything else is left untouched
+    // (those series score 0 for both players regardless of the simulation).
+    const picks: PickRow[] = [
+      { player_id: alice.id, series_id: "E1", winner: "Boston Bruins", games: 5 },
+      { player_id: bob.id, series_id: "E1", winner: "Buffalo Sabres", games: 5 }
+    ];
+    const chances = simulateWinChances([alice, bob], picks, rows, CONFIG, {
+      trials: 20000,
+      rng: mulberry32(12345)
+    });
+    const byName = Object.fromEntries(
+      chances.map((c) => [c.player.name, c.winProbability])
+    );
+    expect(byName.Alice).toBeGreaterThan(0.45);
+    expect(byName.Alice).toBeLessThan(0.55);
+    expect(byName.Alice + byName.Bob).toBeCloseTo(1, 5);
+  });
+
+  it("orders results from highest to lowest win probability", () => {
+    const rows = baseSeriesRows();
+    setRow(rows, "E1", { team1: "Boston Bruins", team2: "Buffalo Sabres" });
+    // Alice already banked a correct, completed series; Bob has nothing.
+    setRow(rows, "E2", {
+      team1: "Montreal Canadiens",
+      team2: "Tampa Bay Lightning",
+      winner: "Montreal Canadiens",
+      games: 5
+    });
+    const picks: PickRow[] = [
+      { player_id: alice.id, series_id: "E2", winner: "Montreal Canadiens", games: 5 },
+      { player_id: alice.id, series_id: "E1", winner: "Boston Bruins", games: 5 },
+      { player_id: bob.id, series_id: "E1", winner: "Buffalo Sabres", games: 5 }
+    ];
+    const chances = simulateWinChances([alice, bob], picks, rows, CONFIG, {
+      trials: 5000,
+      rng: mulberry32(7)
+    });
+    expect(chances[0].player.name).toBe("Alice");
+    expect(chances[0].winProbability).toBeGreaterThanOrEqual(
+      chances[1].winProbability
+    );
+    const sum = chances.reduce((acc, c) => acc + c.winProbability, 0);
+    expect(sum).toBeCloseTo(1, 5);
   });
 });
