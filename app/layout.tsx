@@ -7,7 +7,17 @@ export const metadata: Metadata = {
   description: "Track the 2026 NHL playoff bracket and score everyone's picks."
 };
 
+// Rendered fresh per request so the footer date always reflects the current day.
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const today = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "America/New_York"
+  });
+
   return (
     <html lang="en">
       <body>
@@ -31,6 +41,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </nav>
         </header>
         <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+        <footer className="mx-auto max-w-5xl px-4 py-6 text-xs text-slate-500">
+          Updated {today}
+        </footer>
       </body>
     </html>
   );

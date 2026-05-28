@@ -116,4 +116,98 @@ export function rankPlayers(scores: PlayerScore[]): PlayerScore[] {
   });
 }
 
+export type WinChance = {
+  player: PlayerRow;
+  winProbability: number;
+};
+
+const DEFAULT_TRIALS = 10000;
+
+// Estimates each player's chance of finishing first by Monte Carlo: every
+// undecided series is replayed as a 50/50 coin flip with an equally likely
+// game count (4-7), winners propagate down the bracket, and the resulting
+// standings are scored with the real scoring rules. A trial's win is split
+// evenly among players tied on (total, correct winners) — the alphabetical
+// tiebreak is treated as a coin we don't model.
+export function simulateWinChances(
+  players: PlayerRow[],
+  picks: PickRow[],
+  rows: SeriesRow[],
+  config: Record<string, number>,
+  options: { trials?: number; rng?: () => number } = {}
+): WinChance[] {
+  if (players.length === 0) return [];
+  const trials = Math.max(1, Math.floor(options.trials ?? DEFAULT_TRIALS));
+  const rng = options.rng ?? Math.random;
+
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  const wins = new Map<number, number>();
+  for (const p of players) wins.set(p.id, 0);
+
+  for (let t = 0; t < trials; t++) {
+    const sim = new Map<
+      string,
+      { team1: string | null; team2: string | null; winner: string | null; games: number | null }
+    >();
+
+    // SERIES is in dependency order, so every source resolves before its consumer.
+    for (const def of SERIES) {
+      const row = byId.get(def.id)!;
+      const team1 = def.team1Source ? sim.get(def.team1Source)?.winner ?? null : row.team1;
+      const team2 = def.team2Source ? sim.get(def.team2Source)?.winner ?? null : row.team2;
+
+      if (row.winner) {
+        sim.set(def.id, { team1, team2, winner: row.winner, games: row.games });
+        continue;
+      }
+
+      const candidates = [team1, team2].filter((x): x is string => !!x);
+      let winner: string | null = null;
+      let games: number | null = null;
+      if (candidates.length === 2) {
+        winner = rng() < 0.5 ? candidates[0] : candidates[1];
+        games = 4 + Math.floor(rng() * 4);
+      } else if (candidates.length === 1) {
+        winner = candidates[0];
+        games = 4 + Math.floor(rng() * 4);
+      }
+      sim.set(def.id, { team1, team2, winner, games });
+    }
+
+    const resolvedSim: ResolvedSeries[] = SERIES.map((def) => {
+      const row = byId.get(def.id)!;
+      const s = sim.get(def.id)!;
+      return {
+        ...row,
+        winner: s.winner,
+        games: s.games,
+        resolvedTeam1: s.team1,
+        resolvedTeam2: s.team2,
+        pointsForRound: config[def.pointsKey] ?? 0
+      };
+    });
+
+    const scored = scorePlayers(players, picks, resolvedSim, config);
+    const maxTotal = Math.max(...scored.map((s) => s.total));
+    const contenders = scored.filter((s) => s.total === maxTotal);
+    const maxCorrect = Math.max(...contenders.map((s) => s.correctWinners));
+    const topPlayers = contenders.filter((s) => s.correctWinners === maxCorrect);
+    const credit = 1 / topPlayers.length;
+    for (const s of topPlayers) {
+      wins.set(s.player.id, (wins.get(s.player.id) ?? 0) + credit);
+    }
+  }
+
+  return players
+    .map((player) => ({
+      player,
+      winProbability: (wins.get(player.id) ?? 0) / trials
+    }))
+    .sort((a, b) =>
+      b.winProbability !== a.winProbability
+        ? b.winProbability - a.winProbability
+        : a.player.name.localeCompare(b.player.name)
+    );
+}
+
 export { ROUNDS };
