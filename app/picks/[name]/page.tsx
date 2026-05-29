@@ -2,16 +2,24 @@ import { notFound } from "next/navigation";
 import {
   ensureSchema,
   getAllPicks,
+  getAllPlayers,
   getAllSeries,
   getConfig,
   sql,
   type PickRow
 } from "@/lib/db";
-import { resolveSeries, scorePlayers } from "@/lib/scoring";
+import {
+  formatWinChance,
+  resolveSeries,
+  scorePlayers,
+  simulateWinChances
+} from "@/lib/scoring";
 import { ROUND_LABEL, SERIES } from "@/lib/series";
 import { norm } from "@/lib/teams";
 
 export const dynamic = "force-dynamic";
+
+const SIM_TRIALS = 10000;
 
 export default async function PlayerPicksPage({
   params
@@ -28,9 +36,10 @@ export default async function PlayerPicksPage({
   if (rows.length === 0) notFound();
   const player = rows[0];
 
-  const [series, allPicks, config] = await Promise.all([
+  const [series, allPicks, allPlayers, config] = await Promise.all([
     getAllSeries(),
     getAllPicks(),
+    getAllPlayers(),
     getConfig()
   ]);
   const myPicks: PickRow[] = allPicks.filter((p) => p.player_id === player.id);
@@ -39,12 +48,18 @@ export default async function PlayerPicksPage({
   const byId = new Map(resolved.map((r) => [r.id, r]));
   const scored = scorePlayers([player], myPicks, resolved, config)[0];
   const picksLocked = !!config.PICKS_LOCKED;
+  // Win chance must be computed against the whole field, not this player alone.
+  const myWinChance =
+    simulateWinChances(allPlayers, allPicks, series, config, {
+      trials: SIM_TRIALS
+    }).find((w) => w.player.id === player.id)?.winProbability ?? 0;
 
   return (
     <section>
       <h1 className="text-2xl font-bold mb-2">{player.name}</h1>
       <p className="text-sm text-slate-600 mb-4">
-        Total: <strong>{scored.total}</strong> · Max possible:{" "}
+        Win chance: <strong>{formatWinChance(myWinChance)}</strong> · Total:{" "}
+        <strong>{scored.total}</strong> · Max possible:{" "}
         <strong>{scored.total + scored.maxRemaining}</strong> · Correct
         winners: <strong>{scored.correctWinners}</strong>
       </p>
