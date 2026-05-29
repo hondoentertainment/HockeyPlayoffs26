@@ -4,19 +4,17 @@ import {
   getAllSeries,
   getConfig
 } from "@/lib/db";
-import { resolveSeries, scorePlayers, simulateWinChances } from "@/lib/scoring";
+import {
+  formatWinChance,
+  resolveSeries,
+  scorePlayers,
+  simulateWinChances
+} from "@/lib/scoring";
 import { ROUNDS } from "@/lib/series";
 
 export const dynamic = "force-dynamic";
 
 const SIM_TRIALS = 10000;
-
-function formatWinChance(p: number): string {
-  if (p <= 0) return "—";
-  if (p < 0.001) return "<0.1%";
-  if (p > 0.999) return ">99.9%";
-  return `${(p * 100).toFixed(1)}%`;
-}
 
 export default async function LeaderboardPage() {
   const [series, players, picks, config] = await Promise.all([

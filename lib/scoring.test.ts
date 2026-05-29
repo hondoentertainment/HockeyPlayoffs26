@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { PickRow, PlayerRow, SeriesRow } from "./db";
 import {
+  formatWinChance,
   rankPlayers,
   resolveSeries,
   scorePlayers,
@@ -300,5 +301,19 @@ describe("simulateWinChances", () => {
     );
     const sum = chances.reduce((acc, c) => acc + c.winProbability, 0);
     expect(sum).toBeCloseTo(1, 5);
+  });
+});
+
+describe("formatWinChance", () => {
+  it("renders an em dash for zero and a normal percent otherwise", () => {
+    expect(formatWinChance(0)).toBe("—");
+    expect(formatWinChance(0.5)).toBe("50.0%");
+    expect(formatWinChance(0.123)).toBe("12.3%");
+  });
+
+  it("clamps tiny and near-certain probabilities to readable bounds", () => {
+    expect(formatWinChance(0.0005)).toBe("<0.1%");
+    expect(formatWinChance(0.9995)).toBe(">99.9%");
+    expect(formatWinChance(1)).toBe(">99.9%");
   });
 });
