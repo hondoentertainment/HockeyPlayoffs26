@@ -1,0 +1,35 @@
+{
+  "asOf": "2026-05-29",
+  "round1Matchups": {
+    "E1": ["Carolina Hurricanes", "Ottawa Senators"],
+    "E2": ["Pittsburgh Penguins", "Philadelphia Flyers"],
+    "E3": ["Buffalo Sabres", "Boston Bruins"],
+    "E4": ["Tampa Bay Lightning", "Montreal Canadiens"],
+    "W1": ["Colorado Avalanche", "Los Angeles Kings"],
+    "W2": ["Dallas Stars", "Minnesota Wild"],
+    "W3": ["Vegas Golden Knights", "Utah Mammoth"],
+    "W4": ["Edmonton Oilers", "Anaheim Ducks"]
+  },
+  "results": {
+    "E1": { "winner": "Carolina Hurricanes", "games": 4 },
+    "E2": { "winner": "Philadelphia Flyers", "games": 6 },
+    "E3": { "winner": "Buffalo Sabres", "games": 6 },
+    "E4": { "winner": "Montreal Canadiens", "games": 7 },
+    "W1": { "winner": "Colorado Avalanche", "games": 4 },
+    "W2": { "winner": "Minnesota Wild", "games": 6 },
+    "W3": { "winner": "Vegas Golden Knights", "games": 6 },
+    "W4": { "winner": "Anaheim Ducks", "games": 6 },
+    "E5": { "winner": "Carolina Hurricanes", "games": 4 },
+    "E6": { "winner": "Montreal Canadiens", "games": 7 },
+    "W5": { "winner": "Colorado Avalanche", "games": 5 },
+    "W6": { "winner": "Vegas Golden Knights", "games": 6 },
+    "E7": { "winner": "Carolina Hurricanes", "games": 5 },
+    "W7": { "winner": "Vegas Golden Knights", "games": 4 }
+  },
+  "stanleyCupFinal": {
+    "headline": "Stanley Cup Final",
+    "matchup": "Carolina Hurricanes vs. Vegas Golden Knights",
+    "recap": "Carolina clinched the East with a 6-1 win over Montreal in Game 5 on May 29.",
+    "nextGame": "Game 1 — Tuesday, June 2 at Carolina (8 p.m. ET, ABC)"
+  }
+}

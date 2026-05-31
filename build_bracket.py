@@ -58,18 +58,16 @@ ROUND_LABELS = _SERIES_DATA["roundLabels"]
 ROUND_ORDER = _SERIES_DATA["roundOrder"]
 DEFAULT_CONFIG = _SERIES_DATA["defaultConfig"]
 
-# 2026 NHL Playoffs Round 1 matchups.
-# Edit or overwrite in Excel if the bracket set differs from what you see here.
+# 2026 NHL Playoffs Round 1 matchups (from playoff_results.json at repo root).
+_PLAYOFF_JSON_PATH = os.path.join(os.path.dirname(__file__), "playoff_results.json")
+with open(_PLAYOFF_JSON_PATH, "r", encoding="utf-8") as _pf:
+    _PLAYOFF_DATA = json.load(_pf)
+
 ROUND1_MATCHUPS = {
-    "E1": ("Boston Bruins", "Buffalo Sabres"),
-    "E2": ("Montreal Canadiens", "Tampa Bay Lightning"),
-    "E3": ("Ottawa Senators", "Carolina Hurricanes"),
-    "E4": ("Philadelphia Flyers", "Pittsburgh Penguins"),
-    "W1": ("Los Angeles Kings", "Colorado Avalanche"),
-    "W2": ("Minnesota Wild", "Dallas Stars"),
-    "W3": ("Utah Mammoth", "Vegas Golden Knights"),
-    "W4": ("Anaheim Ducks", "Edmonton Oilers"),
+    sid: tuple(teams)
+    for sid, teams in _PLAYOFF_DATA["round1Matchups"].items()
 }
+PLAYOFF_RESULTS = _PLAYOFF_DATA["results"]
 
 NUM_PLAYERS = 20
 
@@ -200,6 +198,8 @@ def write_bracket(wb, ws):
         # Winner
         w = ws.cell(row=r, column=5)
         w.fill = INPUT_FILL
+        if sid in PLAYOFF_RESULTS:
+            w.value = PLAYOFF_RESULTS[sid]["winner"]
         dv = DataValidation(type="list", formula1=f'=INDIRECT("C{r}:D{r}")', allow_blank=True)
         dv.error = "Winner must match Team 1 or Team 2."
         dv.errorTitle = "Invalid winner"
@@ -208,6 +208,8 @@ def write_bracket(wb, ws):
         # Games
         g = ws.cell(row=r, column=6)
         g.fill = INPUT_FILL
+        if sid in PLAYOFF_RESULTS:
+            g.value = PLAYOFF_RESULTS[sid]["games"]
         dv_g = DataValidation(type="whole", operator="between", formula1=4, formula2=7, allow_blank=True)
         dv_g.error = "Series length must be 4, 5, 6, or 7."
         dv_g.errorTitle = "Invalid games"

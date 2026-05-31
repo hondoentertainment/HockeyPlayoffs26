@@ -1,4 +1,5 @@
 import { getAllSeries, getConfig } from "@/lib/db";
+import { STANLEY_CUP_FINAL } from "@/lib/playoff-state";
 import { resolveSeries } from "@/lib/scoring";
 import { ROUNDS, ROUND_LABEL, SERIES } from "@/lib/series";
 
@@ -8,10 +9,20 @@ export default async function BracketPage() {
   const [series, config] = await Promise.all([getAllSeries(), getConfig()]);
   const resolved = resolveSeries(series, config);
   const byId = new Map(resolved.map((r) => [r.id, r]));
+  const scf = byId.get("SCF");
 
   return (
     <section>
-      <h1 className="text-2xl font-bold mb-4">Bracket</h1>
+      <h1 className="text-2xl font-bold mb-2 text-playoff">Bracket</h1>
+      {scf && !scf.winner && scf.resolvedTeam1 && scf.resolvedTeam2 && (
+        <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm">
+          <p className="font-semibold text-playoff">{STANLEY_CUP_FINAL.headline}</p>
+          <p className="text-slate-700">
+            {scf.resolvedTeam1} vs. {scf.resolvedTeam2}
+          </p>
+          <p className="text-xs text-slate-500 mt-1">{STANLEY_CUP_FINAL.nextGame}</p>
+        </div>
+      )}
       <div className="grid gap-6 md:grid-cols-4">
         {ROUNDS.map((round) => (
           <div key={round}>
@@ -24,7 +35,12 @@ export default async function BracketPage() {
                 return (
                   <div
                     key={def.id}
-                    className="rounded border border-slate-200 bg-white p-2 text-xs"
+                    className={
+                      "rounded border bg-white p-2 text-xs " +
+                      (def.id === "SCF" && !r.winner
+                        ? "border-amber-300 ring-1 ring-amber-200"
+                        : "border-slate-200")
+                    }
                   >
                     <div className="flex justify-between text-slate-400 mb-1">
                       <span>{def.id}</span>

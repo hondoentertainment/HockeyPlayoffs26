@@ -1,5 +1,6 @@
 node_modules
 .next
+dist
 .vercel
 .env
 .env.local
@@ -8,3 +9,4 @@ next-env.d.ts
 __pycache__
 *.pyc
 .pytest_cache
+.env*.local

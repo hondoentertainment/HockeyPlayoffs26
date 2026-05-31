@@ -1,15 +1,28 @@
 import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 import { DEFAULT_CONFIG, SERIES } from "./series";
+import {
+  seriesFromPlayoffJson,
+  syncPlayoffStateToDb
+} from "./playoff-state";
 
 let _sql: NeonQueryFunction<false, false> | null = null;
 let initPromise: Promise<void> | null = null;
 
+function dbUrl(): string | undefined {
+  return (
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRISMA_URL
+  );
+}
+
+export function hasDatabase(): boolean {
+  return !!dbUrl();
+}
+
 export function sql(): NeonQueryFunction<false, false> {
   if (!_sql) {
-    const url =
-      process.env.DATABASE_URL ||
-      process.env.POSTGRES_URL ||
-      process.env.POSTGRES_PRISMA_URL;
+    const url = dbUrl();
     if (!url) {
       throw new Error(
         "No database URL set. Provide DATABASE_URL (or POSTGRES_URL) in your env."
@@ -21,6 +34,7 @@ export function sql(): NeonQueryFunction<false, false> {
 }
 
 export async function ensureSchema(): Promise<void> {
+  if (!hasDatabase()) return;
   if (!initPromise) {
     initPromise = (async () => {
       const q = sql();
@@ -60,6 +74,8 @@ export async function ensureSchema(): Promise<void> {
         await q`INSERT INTO config (key, value) VALUES (${k}, ${v})
           ON CONFLICT (key) DO NOTHING`;
       }
+
+      await syncPlayoffStateToDb(q);
     })().catch((err) => {
       initPromise = null;
       throw err;
@@ -89,21 +105,25 @@ export type PickRow = {
 };
 
 export async function getAllSeries(): Promise<SeriesRow[]> {
+  if (!hasDatabase()) return seriesFromPlayoffJson();
   await ensureSchema();
   return (await sql()`SELECT * FROM series`) as unknown as SeriesRow[];
 }
 
 export async function getAllPlayers(): Promise<PlayerRow[]> {
+  if (!hasDatabase()) return [];
   await ensureSchema();
   return (await sql()`SELECT id, name FROM players ORDER BY name ASC`) as unknown as PlayerRow[];
 }
 
 export async function getAllPicks(): Promise<PickRow[]> {
+  if (!hasDatabase()) return [];
   await ensureSchema();
   return (await sql()`SELECT * FROM picks`) as unknown as PickRow[];
 }
 
 export async function getConfig(): Promise<Record<string, number>> {
+  if (!hasDatabase()) return { ...DEFAULT_CONFIG };
   await ensureSchema();
   const rows = (await sql()`SELECT * FROM config`) as unknown as {
     key: string;
