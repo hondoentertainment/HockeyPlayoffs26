@@ -24,10 +24,10 @@
   },
   "roundOrder": ["R1", "R2", "CF", "SCF"],
   "defaultConfig": {
-    "R1_PTS": 2,
-    "R2_PTS": 4,
-    "CF_PTS": 6,
-    "SCF_PTS": 10,
+    "R1_PTS": 1,
+    "R2_PTS": 2,
+    "CF_PTS": 4,
+    "SCF_PTS": 8,
     "GAMES_BONUS": 1,
     "PICKS_LOCKED": 0
   }

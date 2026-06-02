@@ -117,7 +117,7 @@ def write_instructions(ws):
         ("   YELLOW = user input   GREEN = auto-filled from formulas   PEACH = picks locked", None, None),
         ("", None, None),
         ("Default scoring", SUBHEADER_FONT, SUBHEADER_FILL),
-        ("   Round 1: 2 pts   Round 2: 4 pts   Conference Final: 6 pts   Stanley Cup Final: 10 pts   Correct games bonus: +1", None, None),
+        ("   Round 1: 1 pt   Round 2: 2 pts   Conference Final: 4 pts   Stanley Cup Final: 8 pts   Correct games bonus: +1", None, None),
     ]
     for i, (text, font, fill) in enumerate(rows, start=1):
         c = ws.cell(row=i, column=1, value=text)

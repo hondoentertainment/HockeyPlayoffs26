@@ -34,10 +34,10 @@ Defaults (editable on `/admin`):
 
 | Round              | Points |
 |--------------------|-------:|
-| Round 1            |      2 |
-| Round 2            |      4 |
-| Conference Final   |      6 |
-| Stanley Cup Final  |     10 |
+| Round 1            |      1 |
+| Round 2            |      2 |
+| Conference Final   |      4 |
+| Stanley Cup Final  |      8 |
 
 Plus **+1 bonus** for picking the correct number of games (4–7), only when
 the winner pick was also correct. Tiebreaker: most correct winners, then
@@ -125,10 +125,10 @@ The workbook has six sheets:
 
 | Round              | Points for correct winner |
 |--------------------|--------------------------:|
-| Round 1            | 2                         |
-| Round 2            | 4                         |
-| Conference Final   | 6                         |
-| Stanley Cup Final  | 10                        |
+| Round 1            | 1                         |
+| Round 2            | 2                         |
+| Conference Final   | 4                         |
+| Stanley Cup Final  | 8                         |
 
 Plus a **+1 bonus** for picking the correct number of games (4–7), awarded
 only when the series winner pick was also correct.

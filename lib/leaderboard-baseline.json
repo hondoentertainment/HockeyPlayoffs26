@@ -1,0 +1,326 @@
+[
+  {
+    "name": "Jay",
+    "total": 18,
+    "correctWinners": 10,
+    "maxPossible": 27,
+    "perRound": {
+      "R1": 6,
+      "R2": 4,
+      "CF": 8,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Donn",
+    "total": 14,
+    "correctWinners": 9,
+    "maxPossible": 14,
+    "perRound": {
+      "R1": 6,
+      "R2": 4,
+      "CF": 4,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "James",
+    "total": 14,
+    "correctWinners": 10,
+    "maxPossible": 14,
+    "perRound": {
+      "R1": 8,
+      "R2": 2,
+      "CF": 4,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Bunny",
+    "total": 13,
+    "correctWinners": 8,
+    "maxPossible": 13,
+    "perRound": {
+      "R1": 5,
+      "R2": 4,
+      "CF": 4,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "James Jones",
+    "total": 13,
+    "correctWinners": 8,
+    "maxPossible": 22,
+    "perRound": {
+      "R1": 5,
+      "R2": 4,
+      "CF": 4,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Lamont",
+    "total": 12,
+    "correctWinners": 7,
+    "maxPossible": 12,
+    "perRound": {
+      "R1": 4,
+      "R2": 4,
+      "CF": 4,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Ali Hen",
+    "total": 11,
+    "correctWinners": 7,
+    "maxPossible": 11,
+    "perRound": {
+      "R1": 5,
+      "R2": 2,
+      "CF": 4,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "CA Scott (Text)",
+    "total": 10,
+    "correctWinners": 6,
+    "maxPossible": 19,
+    "perRound": {
+      "R1": 4,
+      "R2": 2,
+      "CF": 4,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Gig",
+    "total": 10,
+    "correctWinners": 6,
+    "maxPossible": 10,
+    "perRound": {
+      "R1": 4,
+      "R2": 2,
+      "CF": 4,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Kyle",
+    "total": 10,
+    "correctWinners": 6,
+    "maxPossible": 10,
+    "perRound": {
+      "R1": 4,
+      "R2": 2,
+      "CF": 4,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Mia",
+    "total": 9,
+    "correctWinners": 6,
+    "maxPossible": 18,
+    "perRound": {
+      "R1": 5,
+      "R2": 0,
+      "CF": 4,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Audrey Jennings",
+    "total": 8,
+    "correctWinners": 7,
+    "maxPossible": 8,
+    "perRound": {
+      "R1": 6,
+      "R2": 2,
+      "CF": 0,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Cate",
+    "total": 8,
+    "correctWinners": 7,
+    "maxPossible": 8,
+    "perRound": {
+      "R1": 6,
+      "R2": 2,
+      "CF": 0,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Justin C",
+    "total": 8,
+    "correctWinners": 7,
+    "maxPossible": 8,
+    "perRound": {
+      "R1": 6,
+      "R2": 2,
+      "CF": 0,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Natalie B",
+    "total": 8,
+    "correctWinners": 4,
+    "maxPossible": 17,
+    "perRound": {
+      "R1": 2,
+      "R2": 2,
+      "CF": 4,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Owen Evans",
+    "total": 8,
+    "correctWinners": 7,
+    "maxPossible": 8,
+    "perRound": {
+      "R1": 6,
+      "R2": 2,
+      "CF": 0,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Pword",
+    "total": 8,
+    "correctWinners": 5,
+    "maxPossible": 8,
+    "perRound": {
+      "R1": 4,
+      "R2": 0,
+      "CF": 4,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Jackson",
+    "total": 7,
+    "correctWinners": 6,
+    "maxPossible": 7,
+    "perRound": {
+      "R1": 5,
+      "R2": 2,
+      "CF": 0,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Sunil Saluja",
+    "total": 7,
+    "correctWinners": 5,
+    "maxPossible": 7,
+    "perRound": {
+      "R1": 3,
+      "R2": 4,
+      "CF": 0,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Anastasia (Stasi)",
+    "total": 6,
+    "correctWinners": 5,
+    "maxPossible": 6,
+    "perRound": {
+      "R1": 4,
+      "R2": 2,
+      "CF": 0,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Chef",
+    "total": 6,
+    "correctWinners": 5,
+    "maxPossible": 6,
+    "perRound": {
+      "R1": 4,
+      "R2": 2,
+      "CF": 0,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Matt Mcpherson",
+    "total": 6,
+    "correctWinners": 5,
+    "maxPossible": 6,
+    "perRound": {
+      "R1": 4,
+      "R2": 2,
+      "CF": 0,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Hockey Steve",
+    "total": 5,
+    "correctWinners": 5,
+    "maxPossible": 5,
+    "perRound": {
+      "R1": 5,
+      "R2": 0,
+      "CF": 0,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Markus",
+    "total": 5,
+    "correctWinners": 4,
+    "maxPossible": 5,
+    "perRound": {
+      "R1": 3,
+      "R2": 2,
+      "CF": 0,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "No Name",
+    "total": 5,
+    "correctWinners": 4,
+    "maxPossible": 5,
+    "perRound": {
+      "R1": 3,
+      "R2": 2,
+      "CF": 0,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Chris M",
+    "total": 4,
+    "correctWinners": 4,
+    "maxPossible": 4,
+    "perRound": {
+      "R1": 4,
+      "R2": 0,
+      "CF": 0,
+      "SCF": 0
+    }
+  },
+  {
+    "name": "Jenn",
+    "total": 2,
+    "correctWinners": 2,
+    "maxPossible": 2,
+    "perRound": {
+      "R1": 2,
+      "R2": 0,
+      "CF": 0,
+      "SCF": 0
+    }
+  }
+]

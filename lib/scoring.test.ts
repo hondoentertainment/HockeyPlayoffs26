@@ -21,7 +21,7 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-const CONFIG = { R1_PTS: 2, R2_PTS: 4, CF_PTS: 6, SCF_PTS: 10, GAMES_BONUS: 1 };
+const CONFIG = { R1_PTS: 1, R2_PTS: 2, CF_PTS: 4, SCF_PTS: 8, GAMES_BONUS: 1 };
 
 function baseSeriesRows(): SeriesRow[] {
   return SERIES.map((s) => ({
@@ -63,10 +63,10 @@ describe("resolveSeries", () => {
 
   it("attaches the correct points for each round", () => {
     const resolved = resolveSeries(baseSeriesRows(), CONFIG);
-    expect(resolved.find((r) => r.id === "E1")!.pointsForRound).toBe(2);
-    expect(resolved.find((r) => r.id === "E5")!.pointsForRound).toBe(4);
-    expect(resolved.find((r) => r.id === "E7")!.pointsForRound).toBe(6);
-    expect(resolved.find((r) => r.id === "SCF")!.pointsForRound).toBe(10);
+    expect(resolved.find((r) => r.id === "E1")!.pointsForRound).toBe(1);
+    expect(resolved.find((r) => r.id === "E5")!.pointsForRound).toBe(2);
+    expect(resolved.find((r) => r.id === "E7")!.pointsForRound).toBe(4);
+    expect(resolved.find((r) => r.id === "SCF")!.pointsForRound).toBe(8);
   });
 });
 
@@ -83,10 +83,10 @@ describe("scorePlayers", () => {
       { player_id: alice.id, series_id: "E1", winner: "Boston Bruins", games: 7 }
     ];
     const [scored] = scorePlayers([alice], picks, resolveSeries(rows, CONFIG), CONFIG);
-    expect(scored.total).toBe(2);
+    expect(scored.total).toBe(1);
     expect(scored.correctWinners).toBe(1);
-    expect(scored.perSeries.E1).toBe(2);
-    expect(scored.perRound.R1).toBe(2);
+    expect(scored.perSeries.E1).toBe(1);
+    expect(scored.perRound.R1).toBe(1);
   });
 
   it("adds the games bonus only when both winner and games match", () => {
@@ -101,8 +101,8 @@ describe("scorePlayers", () => {
       { player_id: alice.id, series_id: "E1", winner: "Boston Bruins", games: 6 }
     ];
     const [scored] = scorePlayers([alice], picks, resolveSeries(rows, CONFIG), CONFIG);
-    expect(scored.total).toBe(3);
-    expect(scored.perSeries.E1).toBe(3);
+    expect(scored.total).toBe(2);
+    expect(scored.perSeries.E1).toBe(2);
   });
 
   it("does not award the games bonus when the winner pick is wrong", () => {
@@ -133,7 +133,7 @@ describe("scorePlayers", () => {
       { player_id: alice.id, series_id: "E1", winner: "  BOSTON BRUINS  ", games: 5 }
     ];
     const [scored] = scorePlayers([alice], picks, resolveSeries(rows, CONFIG), CONFIG);
-    expect(scored.total).toBe(3);
+    expect(scored.total).toBe(2);
   });
 
   it("counts maxRemaining only for series where the picked team is still alive", () => {
@@ -158,12 +158,12 @@ describe("scorePlayers", () => {
     const aliceScore = scored.find((s) => s.player.id === alice.id)!;
     const bobScore = scored.find((s) => s.player.id === bob.id)!;
 
-    // Alice: E1 correct winner + correct games = R1_PTS (2) + bonus (1) = 3.
-    expect(aliceScore.total).toBe(3);
+    // Alice: E1 correct winner + correct games = R1_PTS (1) + bonus (1) = 2.
+    expect(aliceScore.total).toBe(2);
     // Bob: picked Sabres in E5, but Sabres are eliminated; E5 should NOT add to max
     const bobE5Contribution = bobScore.maxRemaining;
-    // Expect Bob's max to be 5 less than Alice's (the E5 slot is dead for Bob)
-    expect(aliceScore.maxRemaining - bobScore.maxRemaining).toBe(5);
+    // Expect Bob's max to be R2_PTS + bonus less than Alice's (the E5 slot is dead for Bob)
+    expect(aliceScore.maxRemaining - bobScore.maxRemaining).toBe(3);
     expect(bobE5Contribution).toBeGreaterThan(0); // still has other pending series
   });
 
