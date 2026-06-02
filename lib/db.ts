@@ -1,4 +1,5 @@
 import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
+import { getPoolPicks, getPoolPlayers } from "./pool-participants";
 import { DEFAULT_CONFIG, SERIES } from "./series";
 import {
   seriesFromPlayoffJson,
@@ -111,23 +112,35 @@ export async function getAllSeries(): Promise<SeriesRow[]> {
 }
 
 export async function getAllPlayers(): Promise<PlayerRow[]> {
-  if (!hasDatabase()) return [];
+  if (!hasDatabase()) return getPoolPlayers();
   await ensureSchema();
-  return (await sql()`SELECT id, name FROM players ORDER BY name ASC`) as unknown as PlayerRow[];
+  const rows = (await sql()`SELECT id, name FROM players ORDER BY name ASC`) as unknown as PlayerRow[];
+  return rows.length > 0 ? rows : getPoolPlayers();
 }
 
 export async function getAllPicks(): Promise<PickRow[]> {
-  if (!hasDatabase()) return [];
+  if (!hasDatabase()) return getPoolPicks();
   await ensureSchema();
-  return (await sql()`SELECT * FROM picks`) as unknown as PickRow[];
+  const rows = (await sql()`SELECT * FROM picks`) as unknown as PickRow[];
+  return rows.length > 0 ? rows : getPoolPicks();
 }
 
 export async function getConfig(): Promise<Record<string, number>> {
-  if (!hasDatabase()) return { ...DEFAULT_CONFIG };
+  if (!hasDatabase()) return { ...DEFAULT_CONFIG, PICKS_LOCKED: 1 };
   await ensureSchema();
   const rows = (await sql()`SELECT * FROM config`) as unknown as {
     key: string;
     value: number;
   }[];
-  return Object.fromEntries(rows.map((r) => [r.key, r.value]));
+  const config = Object.fromEntries(rows.map((r) => [r.key, r.value]));
+  const players = (await sql()`SELECT id FROM players LIMIT 1`) as unknown as {
+    id: number;
+  }[];
+  if (players.length === 0) return { ...config, PICKS_LOCKED: 1 };
+  return config;
+}
+
+export async function getPlayerByName(name: string): Promise<PlayerRow | null> {
+  const players = await getAllPlayers();
+  return players.find((p) => p.name === name) ?? null;
 }

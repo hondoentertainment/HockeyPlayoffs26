@@ -13,6 +13,7 @@ import {
   getAllSeries,
   getConfig
 } from "@/lib/db";
+import { POOL_PARTICIPANT_COUNT } from "@/lib/pool-participants";
 import {
   resolveSeries,
   scorePlayers,
@@ -70,6 +71,12 @@ export default async function LeaderboardPage() {
           <h1 className="text-2xl font-bold text-playoff">Leaderboard</h1>
           <p className="mt-1 text-sm text-slate-600">
             Ranked by simulated win probability, then total points.
+            {rows.length === POOL_PARTICIPANT_COUNT && (
+              <span className="text-slate-500">
+                {" "}
+                · {POOL_PARTICIPANT_COUNT} players from Excel import
+              </span>
+            )}
           </p>
         </div>
         <Link

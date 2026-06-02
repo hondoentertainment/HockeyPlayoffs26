@@ -1,11 +1,10 @@
 import { notFound } from "next/navigation";
 import {
-  ensureSchema,
   getAllPicks,
   getAllPlayers,
   getAllSeries,
   getConfig,
-  sql,
+  getPlayerByName,
   type PickRow
 } from "@/lib/db";
 import {
@@ -26,15 +25,9 @@ export default async function PlayerPicksPage({
 }: {
   params: { name: string };
 }) {
-  await ensureSchema();
   const name = decodeURIComponent(params.name);
-  const rows = (await sql()`
-    SELECT id, name FROM players WHERE name = ${name} LIMIT 1`) as unknown as {
-    id: number;
-    name: string;
-  }[];
-  if (rows.length === 0) notFound();
-  const player = rows[0];
+  const player = await getPlayerByName(name);
+  if (!player) notFound();
 
   const [series, allPicks, allPlayers, config] = await Promise.all([
     getAllSeries(),
